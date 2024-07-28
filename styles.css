@@ -120,6 +120,7 @@ td {
   margin: 0 5px;
 }
 
+/*
 .quantity-control button {
   width: 30px;
   height: 30px;
@@ -128,6 +129,7 @@ td {
   border-radius: 4px;
   cursor: pointer;
 }
+*/
 
 /* styles.css 파일의 끝에 추가 */
 @media (max-width: 768px) {
