@@ -72,13 +72,26 @@ window.onload = function () {
             const newStock = {
                 name: stockName,
                 rateOfReturn: '0%',
-                stockQuantity: `${buyQuantity}주`,
+                stockQuantity: `${parseInt(buyQuantity)}주`,
                 evalPrice: '0원',
                 sellQuantity: 0
             };
             ownedStockList.push(newStock);
         }
         renderOwnedStockList();
+    }
+
+    function removeToOwnedStockList(stockName, sellQuantity) {
+        const existingStock = ownedStockList.find(stock => stock.name === stockName);
+        console.log('existingStock:', existingStock);
+        if (existingStock) {
+            const currentQuantity = parseInt(existingStock.stockQuantity.replace('주', ''));
+            existingStock.stockQuantity = `${currentQuantity - parseInt(sellQuantity)}주`;
+            console.log('test');
+        }
+        /*
+        renderOwnedStockList();
+        */
     }
 
 
@@ -103,7 +116,7 @@ window.onload = function () {
         stockList.forEach((stock, index) => {
             const buyQuantity = document.getElementById(`buyQuantity-${index}`).value;
             if (buyQuantity > 0) {
-                message += `${stock.name}: ${buyQuantity}주\n`;
+                message += `${stock.name}: ${parseInt(buyQuantity)}주\n`;
                 addToOwnedStockList(stock.name, buyQuantity);
                 document.getElementById(`buyQuantity-${index}`).value = 0; // Reset the quantity input after buying
             }
@@ -117,33 +130,61 @@ window.onload = function () {
 
 
     document.getElementById('buy-btn').addEventListener('click', collectStockInfo);
+
+    function collectOwnedStockInfo() {
+        let message = "매도 종목 정보:\n";
+        ownedStockList.forEach((stock, index) => {
+            const sellQuantity = document.getElementById(`sellQuantity-${index}`).value;
+            const stockQuantity = parseInt(stock.stockQuantity.replace('주', ''));
+            console.log('stock:', stock);
+            console.log('index:', index);
+            console.log('sellQuantity:', sellQuantity);
+            console.log('stockQuantity:', stockQuantity);
+            if (sellQuantity > 0) {
+                if (stockQuantity < sellQuantity) {
+                    message = "매도 수량이 보유 수량을 초과할 수 없습니다.";
+                } else {
+                    message += `${stock.name}: ${parseInt(sellQuantity)}주\n`;
+                    removeToOwnedStockList(stock.name, sellQuantity);
+                    document.getElementById(`sellQuantity-${index}`).value = 0; // Reset the quantity input after selling
+                }
+            }
+        });
+        if (message === "매도 종목 정보:\n") {
+            message = "매도할 종목이 없습니다.";
+        }
+        alert(message);
+    }
+
+
+
+    document.getElementById('sell-btn').addEventListener('click', collectOwnedStockInfo);
+
+    /*
+        window.buyStock = function (stockName, index) {
+            const buyQuantity = document.getElementById(`buyQuantity-${index}`).value;
+            alert(`${stockName} 매수! 수량: ${buyQuantity}`);
+        };
     
-
-
-    window.buyStock = function (stockName, index) {
-        const buyQuantity = document.getElementById(`buyQuantity-${index}`).value;
-        alert(`${stockName} 매수! 수량: ${buyQuantity}`);
-    };
-
-    window.sellStock = function (stockName, index) {
-        const buyQuantity = document.getElementById(`buyQuantity-${index}`).value;
-        alert(`${stockName} 매도! 수량: ${buyQuantity}`);
-    };
-
-    window.changeBuyQuantity = function (index, delta) {
-        const quantityInput = document.getElementById(`buyQuantity-${index}`);
-        let newValue = parseInt(quantityInput.value) + delta;
-        if (newValue < 0) newValue = 0;
-        quantityInput.value = newValue;
-    };
-
-    window.changeSellQuantity = function (index, delta) {
-        const quantityInput = document.getElementById(`sellQuantity-${index}`);
-        let newValue = parseInt(quantityInput.value) + delta;
-        if (newValue < 0) newValue = 0;
-        quantityInput.value = newValue;
-    };
-
+        window.sellStock = function (stockName, index) {
+            const buyQuantity = document.getElementById(`buyQuantity-${index}`).value;
+            alert(`${stockName} 매도! 수량: ${buyQuantity}`);
+        };
+    
+        window.changeBuyQuantity = function (index, delta) {
+            const quantityInput = document.getElementById(`buyQuantity-${index}`);
+            let newValue = parseInt(quantityInput.value) + delta;
+            if (newValue < 0) newValue = 0;
+            quantityInput.value = newValue;
+        };
+    
+        window.changeSellQuantity = function (index, delta) {
+            const quantityInput = document.getElementById(`sellQuantity-${index}`);
+            let newValue = parseInt(quantityInput.value) + delta;
+            if (newValue < 0) newValue = 0;
+            quantityInput.value = newValue;
+        };
+    */
     window.toggleTurnEnd = function () {
         const endTurnBtn = document.getElementById('end-turn-btn');
         endTurnBtn.classList.toggle('disabled');
